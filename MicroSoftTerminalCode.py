@@ -9,22 +9,8 @@ from tkinter import colorchooser
 from tkfontchooser import askfont
 from tkinter import filedialog
 pathToSettingFile=Usr_home_dir+'\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json'
-import json
-def uncommentJson():
-    a_file = open(pathToSettingFile, "r")
+import commentjson
 
-    lines = a_file.readlines()
-    a_file.close()
-
-    new_file = open(pathToSettingFile, "w")
-    for line in lines:
-        print(line)
-        tempLine=line.replace(' ','')
-        if not tempLine.startswith("//"):
-            new_file.write(line)
-
-    new_file.close()
-uncommentJson()
 CMD_OPTIONS = [
 "Command Prompt",
 "Windows PowerShell"
@@ -42,7 +28,7 @@ COLOR_SCHEMES=[
 ]
 
 with open(pathToSettingFile) as json_file:
-    data = json.load(json_file)
+    data = commentjson.load(json_file)
     cmdLinePref=data['profiles']['list']
     print(cmdLinePref)
     master = Tk()
