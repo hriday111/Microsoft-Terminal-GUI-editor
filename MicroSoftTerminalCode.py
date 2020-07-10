@@ -10,7 +10,21 @@ from tkfontchooser import askfont
 from tkinter import filedialog
 pathToSettingFile=Usr_home_dir+'\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json'
 import json
+def uncommentJson():
+    a_file = open(pathToSettingFile, "r")
 
+    lines = a_file.readlines()
+    a_file.close()
+
+    new_file = open(pathToSettingFile, "w")
+    for line in lines:
+        print(line)
+        tempLine=line.replace(' ','')
+        if not tempLine.startswith("//"):
+            new_file.write(line)
+
+    new_file.close()
+uncommentJson()
 CMD_OPTIONS = [
 "Command Prompt",
 "Windows PowerShell"
