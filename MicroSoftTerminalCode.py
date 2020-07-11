@@ -8,9 +8,12 @@ Usr_home_dir=str(Path.home())
 from tkinter import colorchooser
 from tkfontchooser import askfont
 from tkinter import filedialog
+from shutil import copyfile
 pathToSettingFile=Usr_home_dir+'\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json'
 import commentjson
-
+from tkinter import filedialog
+Image_extension=''
+background_img_path=Usr_home_dir+'\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\RoamingState\\yourimage'
 CMD_OPTIONS = [
 "Command Prompt",
 "Windows PowerShell"
@@ -36,10 +39,13 @@ with open(pathToSettingFile) as json_file:
     hidden_checkbox_var=BooleanVar()
 
     no_transparency_var=BooleanVar()
+    no_transparency_var.set(True)
 
     default_shell_checkbox_var=BooleanVar()
 
     No_background_checkbox_var=BooleanVar()
+
+    background_img_checkbox_var=BooleanVar()
 
     Cmdvariable = StringVar(master)
     Cmdvariable.set('Choose Shell')
@@ -63,6 +69,7 @@ with open(pathToSettingFile) as json_file:
     Background_is_transparent=Checkbutton(master, text="No Background Color", variable=No_background_checkbox_var,onvalue=True,offvalue=False)
     Background_is_transparent.pack(side="top")
 #Background color
+    
     def choose_background_color():
         global Background_color_hexStr
         Background_color_hexStr=colorchooser.askcolor()[1]
@@ -71,7 +78,20 @@ with open(pathToSettingFile) as json_file:
     choose_background_color_button= Button(master, text="Pick a color", command=choose_background_color)
     choose_background_color_button.pack(side='top')
 #Background Image
-    #TODO
+    background_img_checkbox=Checkbutton(master, text="Enable Background Image? ", variable=background_img_checkbox_var, onvalue=True, offvalue=False)
+    background_img_checkbox.pack(side="top")
+    def choose_background_image():
+        global Image_extension
+        path=filedialog.askopenfilename(filetypes=[("Image File",'.jpg'),("Image File",'.png')])
+        print(path[:-3])
+        if path.endswith('.jpg'):
+            Image_extension='.jpg'
+        else:
+            Image_extension='.png'
+        print(path)
+        copyfile(path, background_img_path+Image_extension)
+    choose_background_image_button = Button(master, text="Choose Background Image. ",command =choose_background_image)
+    choose_background_image_button.pack(side='top')
 #Slider
     Choose_background_transparency = Scale(master, from_=00, to=100, orient=HORIZONTAL)
     Choose_background_transparency.pack(side="top")
@@ -117,8 +137,13 @@ with open(pathToSettingFile) as json_file:
         else:
             cmdLinePref[CmdNum]['useAcrylic']=True
             cmdLinePref[CmdNum]['acrylicOpacity']=float(Choose_background_transparency.get()/100)
+        if background_img_checkbox_var.get():
+            cmdLinePref[CmdNum]['backgroundImage']="ms-appdata:///roaming/yourimage"+Image_extension
+        else:
+            if 'backgroundImage' in cmdLinePref[CmdNum]:
+                del cmdLinePref[CmdNum]['backgroundImage']
         with open(pathToSettingFile, 'w') as outfile:
-            json.dump(data, outfile)
+            commentjson.dump(data, outfile)
     button = Button(master, text="Set_All", command=Apply_Changes)
     button.pack(side="top")   
 mainloop()
